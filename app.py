@@ -1,237 +1,69 @@
 """
-====================================================
-ALPHA v2.0
-Professional Dashboard
-====================================================
+ALPHA v2
+Integrated Dashboard
 """
 
 import streamlit as st
 
-from config import (
-    APP_NAME,
-    APP_VERSION,
-    DEFAULT_CAPITAL,
-    DEFAULT_RISK_PERCENT,
-)
-
-from engine import engine
 from market import market
 from scanner import scanner
-from strategy_engine import strategy
-from evidence_engine import evidence
-from logger import info
-
-# ----------------------------------------
-# PAGE CONFIG
-# ----------------------------------------
+from ai_engine import AIEngine
+from dashboard import Dashboard
 
 st.set_page_config(
-    page_title=APP_NAME,
+    page_title="ALPHA v2",
     page_icon="📈",
-    layout="wide",
+    layout="wide"
 )
 
-info("ALPHA v2 Started")
+dashboard = Dashboard()
+ai = AIEngine()
 
-# ----------------------------------------
-# SIDEBAR
-# ----------------------------------------
+dashboard.header()
 
-st.sidebar.title("📈 ALPHA v2")
-
-page = st.sidebar.radio(
-
-    "Navigation",
-
+tab1, tab2, tab3 = st.tabs(
     [
-
         "Dashboard",
-
         "Scanner",
-
-        "Evidence",
-
-        "Strategy",
-
-        "Portfolio",
-
-        "Settings"
-
+        "AI"
     ]
-
 )
 
-# ----------------------------------------
-# DASHBOARD
-# ----------------------------------------
-
-if page == "Dashboard":
-
-    st.title("📈 ALPHA v2 Dashboard")
-
-    c1, c2, c3 = st.columns(3)
+with tab1:
 
     summary = market.summary()
 
-    with c1:
-
-        st.metric(
-
-            "Market",
-
-            summary["status"]
-
-        )
-
-    with c2:
-
-        st.metric(
-
-            "Capital",
-
-            f"₹{DEFAULT_CAPITAL:,}"
-
-        )
-
-    with c3:
-
-        st.metric(
-
-            "Risk",
-
-            f"{DEFAULT_RISK_PERCENT}%"
-
-        )
-
-    st.divider()
-
-    st.subheader("System Status")
-
-    status = {
-
-        "Engine": "🟢",
-
-        "Market": "🟢",
-
-        "Scanner": "🟢",
-
-        "Strategy": "🟢",
-
-        "Evidence": "🟢",
-
-        "Database": "🟢"
-
-    }
-
-    for k, v in status.items():
-
-        st.write(f"{v} {k}")
-
-    st.divider()
-
-    st.subheader("Today's Decision")
-
-    result = engine.run()
-
-    st.json(result)
-
-# ----------------------------------------
-# SCANNER
-# ----------------------------------------
-
-elif page == "Scanner":
-
-    st.title("Scanner")
-
-    results = scanner.scan()
-
-    st.dataframe(results)
-
-# ----------------------------------------
-# EVIDENCE
-# ----------------------------------------
-
-elif page == "Evidence":
-
-    st.title("Evidence")
-
-    symbol = st.text_input("Stock", "RELIANCE")
-
-    if st.button("Check"):
-
-        st.json(
-
-            evidence.recommendation(symbol)
-
-        )
-
-# ----------------------------------------
-# STRATEGY
-# ----------------------------------------
-
-elif page == "Strategy":
-
-    st.title("Strategy Engine")
-
-    symbol = st.text_input(
-
-        "Stock Name",
-
-        "RELIANCE"
-
+    st.metric(
+        "Market",
+        summary["status"]
     )
 
-    st.json(
-
-        strategy.evaluate(symbol)
-
+    st.metric(
+        "Market Regime",
+        summary["regime"]
     )
 
-# ----------------------------------------
-# PORTFOLIO
-# ----------------------------------------
+    st.metric(
+        "Expiry",
+        str(summary["expiry"])
+    )
 
-elif page == "Portfolio":
+with tab2:
 
-    st.title("Portfolio")
+    st.subheader("Scanner")
+
+    data = scanner.scan()
+
+    st.dataframe(data)
+
+with tab3:
+
+    st.subheader("AI Decision")
 
     st.info(
-
-        "Portfolio module coming in next update."
-
-    )
-
-# ----------------------------------------
-# SETTINGS
-# ----------------------------------------
-
-elif page == "Settings":
-
-    st.title("Settings")
-
-    st.write(
-
-        f"Version : {APP_VERSION}"
-
-    )
-
-    st.write(
-
-        f"Capital : ₹{DEFAULT_CAPITAL:,}"
-
-    )
-
-    st.write(
-
-        f"Risk : {DEFAULT_RISK_PERCENT}%"
-
+        "AI module will evaluate live market data in next update."
     )
 
 st.divider()
 
-st.caption(
-
-    f"{APP_NAME} | Version {APP_VERSION}"
-
-)
-
+st.caption("ALPHA v2")

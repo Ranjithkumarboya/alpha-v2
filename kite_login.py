@@ -8,29 +8,33 @@ class KiteLogin:
         self.auth = ZerodhaAuth()
 
     def login(self):
+
         st.subheader("🔐 Zerodha Login")
 
+        # Already logged in
+        if "access_token" in st.session_state:
+            st.success("✅ Zerodha Connected")
+            return
+
+        # Login link
         login_url = self.auth.login_url()
+        st.markdown(f"[👉 Login to Zerodha]({login_url})")
 
-        st.markdown(
-            f"[👉 Click here to Login to Zerodha]({login_url})",
-            unsafe_allow_html=True,
-        )
+        # Check request_token from URL
+        query_params = st.query_params
 
-        request_token = st.text_input(
-            "Paste Request Token after login"
-        )
+        if "request_token" in query_params:
 
-        if st.button("Generate Access Token"):
+            request_token = query_params["request_token"]
 
-            if request_token:
+            try:
+                access_token = self.auth.generate_session(request_token)
 
-                try:
-                    data = self.auth.generate_session(request_token)
+                st.session_state["access_token"] = access_token
 
-                    st.session_state["ACCESS_TOKEN"] = data["access_token"]
+                st.success("✅ Login Successful")
 
-                    st.success("✅ Login Successful")
+                st.rerun()
 
-                except Exception as e:
-                    st.error(str(e))
+            except Exception as e:
+                st.error(e)

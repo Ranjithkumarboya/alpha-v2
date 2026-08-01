@@ -1,40 +1,27 @@
-import streamlit as st
-from auth import ZerodhaAuth
+# Check request_token from URL
+query_params = st.query_params
 
+# DEBUG 1
+st.write("Query Params:", query_params)
 
-class KiteLogin:
+if "request_token" in query_params:
 
-    def __init__(self):
-        self.auth = ZerodhaAuth()
+    request_token = query_params["request_token"]
 
-    def login(self):
+    # DEBUG 2
+    st.write("Request Token:", request_token)
 
-        st.subheader("🔐 Zerodha Login")
+    try:
+        access_token = self.auth.generate_session(request_token)
 
-        # Already logged in
-        if "access_token" in st.session_state:
-            st.success("✅ Zerodha Connected")
-            return
+        # DEBUG 3
+        st.write("Access Token:", access_token)
 
-        # Login link
-        login_url = self.auth.login_url()
-        st.markdown(f"[👉 Login to Zerodha]({login_url})")
+        st.session_state["access_token"] = access_token
 
-        # Check request_token from URL
-        query_params = st.query_params
+        st.success("✅ Login Successful")
 
-        if "request_token" in query_params:
+        st.rerun()
 
-            request_token = query_params["request_token"]
-
-            try:
-                access_token = self.auth.generate_session(request_token)
-
-                st.session_state["access_token"] = access_token
-
-                st.success("✅ Login Successful")
-
-                st.rerun()
-
-            except Exception as e:
-                st.error(e)
+    except Exception as e:
+        st.error(e)

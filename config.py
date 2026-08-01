@@ -30,6 +30,7 @@ DATA_DIR.mkdir(exist_ok=True)
 LOG_DIR.mkdir(exist_ok=True)
 
 TRADES_DB = DATA_DIR / "trades.db"
+DATABASE_FILE = TRADES_DB
 EVIDENCE_DB = DATA_DIR / "evidence.db"
 
 LOG_FILE = LOG_DIR / "alpha.log"

@@ -2,7 +2,7 @@
 ALPHA v2
 Integrated Dashboard
 """
-
+from kite_login import KiteLogin
 import streamlit as st
 
 from market import market
@@ -21,12 +21,12 @@ ai = AIEngine()
 
 dashboard.header()
 
-tab1, tab2, tab3 = st.tabs(
-    [
-        "Dashboard",
-        "Scanner",
-        "AI"
-    ]
+tab1, tab2, tab3, tab4 = st.tabs([
+    "Dashboard",
+    "Scanner",
+    "AI",
+    "Login"
+]
 )
 
 with tab1:
@@ -62,6 +62,11 @@ with tab3:
 
     st.info(
         "AI module will evaluate live market data in next update."
+        
+with tab4:
+    login = KiteLogin()
+    login.login()
+        
     )
 
 st.divider()

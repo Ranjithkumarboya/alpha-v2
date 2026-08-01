@@ -62,12 +62,11 @@ with tab3:
 
     st.info(
         "AI module will evaluate live market data in next update."
+    )
         
 with tab4:
     login = KiteLogin()
     login.login()
-        
-    )
 
 st.divider()
 

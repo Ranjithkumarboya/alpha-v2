@@ -19,8 +19,3 @@ class ZerodhaAuth:
     self.kite.set_access_token(data["access_token"])
 
     return data["access_token"]
-        )
-
-        self.kite.set_access_token(data["access_token"])
-
-        return data

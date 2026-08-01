@@ -65,8 +65,11 @@ with tab3:
     )
         
 with tab4:
-    login = KiteLogin()
-    login.login()
+    if "access_token" in st.session_state:
+        st.success("✅ Zerodha Connected")
+    else:
+        login = KiteLogin()
+        login.login()
 
 st.divider()
 

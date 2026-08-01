@@ -24,4 +24,5 @@ if "request_token" in query_params:
         st.rerun()
 
     except Exception as e:
-        st.error(e)
+    import traceback
+    st.code(traceback.format_exc())

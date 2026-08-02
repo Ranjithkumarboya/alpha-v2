@@ -1,10 +1,3 @@
-"""
-=========================================
-ALPHA v2
-Professional Option Chain Engine
-=========================================
-"""
-
 from market_data import MarketData
 
 
@@ -27,37 +20,41 @@ class OptionChain:
 
         return round(spot / 50) * 50
 
-    def option_chain(self):
+    def atm_options(self):
 
         df = self.market.nifty_option_chain()
 
         if df.empty:
             return None
 
-        expiry = sorted(df["expiry"].unique())[0]
+        strike = self.atm_strike()
+
+        if strike is None:
+            return None
+
+        expiry = df["expiry"].min()
 
         df = df[df["expiry"] == expiry]
 
-        return df.reset_index(drop=True)
+        ce = df[
+            (df["strike"] == strike) &
+            (df["instrument_type"] == "CE")
+        ]
 
-    def atm_options(self):
+        pe = df[
+            (df["strike"] == strike) &
+            (df["instrument_type"] == "PE")
+        ]
 
-        df = self.option_chain()
-
-        if df is None:
+        if ce.empty or pe.empty:
             return None
 
-        strike = self.atm_strike()
-
-        atm = df[df["strike"] == strike]
-
-        if atm.empty:
-            return None
-
-        ce = atm[atm["instrument_type"] == "CE"].iloc[0]
-        pe = atm[atm["instrument_type"] == "PE"].iloc[0]
+        ce = ce.iloc[0]
+        pe = pe.iloc[0]
 
         return {
+
+            "spot": self.spot(),
 
             "strike": strike,
 
@@ -67,7 +64,7 @@ class OptionChain:
 
         }
 
-    def option_prices(self):
+    def summary(self):
 
         option = self.atm_options()
 
@@ -82,25 +79,10 @@ class OptionChain:
             "NFO:" + option["pe_symbol"]
         )
 
-        return {
+        option["ce_price"] = ce_price
+        option["pe_price"] = pe_price
 
-            "spot": self.spot(),
-
-            "strike": option["strike"],
-
-            "ce_symbol": option["ce_symbol"],
-
-            "pe_symbol": option["pe_symbol"],
-
-            "ce_price": ce_price,
-
-            "pe_price": pe_price
-
-        }
-
-    def summary(self):
-
-        return self.option_prices()
+        return option
 
 
 option_chain = OptionChain()

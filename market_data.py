@@ -6,11 +6,11 @@ class MarketData:
 
     def __init__(self):
         self.kite = KiteConnect(api_key=st.secrets["API_KEY"])
-   if "access_token" in st.session_state:
-    self.kite.set_access_token(
-        st.session_state["access_token"]
-    )
-        
+
+        if "access_token" in st.session_state:
+            self.kite.set_access_token(
+                st.session_state["access_token"]
+            )
 
     def quote(self, symbol):
         try:
@@ -32,7 +32,7 @@ class MarketData:
 
     def market_status(self):
         try:
-            quote = self.kite.quote(["NSE:NIFTY 50"])
+            self.kite.quote(["NSE:NIFTY 50"])
             return "OPEN"
         except Exception:
             return "CLOSED"

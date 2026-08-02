@@ -1,71 +1,66 @@
 """
+=========================================
 ALPHA v2
-AI Evidence Engine
+Professional AI Engine
+=========================================
 """
 
-from strategy import StrategyEngine
+from scanner import scanner
 
 
 class AIEngine:
 
     def __init__(self):
-        self.strategy = StrategyEngine()
+        pass
 
-    def evaluate(self, symbol, df):
+    def decision(self):
 
-        result = self.strategy.analyze(df)
+        df = scanner.scan()
 
-        score = result["score"]
+        row = df.iloc[0]
 
-        confidence = min(99, score)
+        signal = row["Signal"]
 
-        if score >= 80:
-            action = "STRONG BUY"
+        if signal == "BUY CE":
 
-        elif score >= 60:
-            action = "BUY"
+            return {
+                "action": "BUY CALL",
+                "confidence": 75,
+                "trend": "Bullish",
+                "risk": "Medium"
+            }
 
-        elif score >= 40:
-            action = "WATCH"
+        elif signal == "BUY PE":
 
-        else:
-            action = "NO TRADE"
+            return {
+                "action": "BUY PUT",
+                "confidence": 75,
+                "trend": "Bearish",
+                "risk": "Medium"
+            }
 
-        if action in ["BUY", "STRONG BUY"]:
+        return {
+            "action": "WAIT",
+            "confidence": 50,
+            "trend": "Sideways",
+            "risk": "Low"
+        }
 
-            entry = round(df["close"].iloc[-1], 2)
+    def summary(self):
 
-            stoploss = round(entry * 0.99, 2)
-
-            target1 = round(entry * 1.02, 2)
-
-            target2 = round(entry * 1.04, 2)
-
-        else:
-
-            entry = None
-            stoploss = None
-            target1 = None
-            target2 = None
+        ai = self.decision()
 
         return {
 
-            "symbol": symbol,
+            "Action": ai["action"],
 
-            "action": action,
+            "Confidence": ai["confidence"],
 
-            "confidence": confidence,
+            "Trend": ai["trend"],
 
-            "score": score,
-
-            "entry": entry,
-
-            "stoploss": stoploss,
-
-            "target1": target1,
-
-            "target2": target2,
-
-            "reasons": result["reasons"]
+            "Risk": ai["risk"]
 
         }
+
+
+ai = AIEngine()

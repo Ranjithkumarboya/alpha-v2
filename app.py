@@ -60,28 +60,30 @@ with tab1:
 
     if "access_token" in st.session_state:
 
-        st.subheader("📈 Live Market")
+    st.subheader("📈 Live Market")
 
-        nifty = market_data.ltp("NSE:NIFTY 50")
-        banknifty = market_data.ltp("NSE:NIFTY BANK")
+    nifty = market_data.ltp("NSE:NIFTY 50")
+    banknifty = market_data.ltp("NSE:NIFTY BANK")
 
-        col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-        col1.metric("NIFTY 50", nifty)
-        col2.metric("BANK NIFTY", banknifty)
-        st.divider()
+    col1.metric("NIFTY 50", nifty)
+    col2.metric("BANK NIFTY", banknifty)
 
-st.subheader("📈 ATM Option Chain")
+    st.divider()
 
-strike = option_chain.atm_strike()
+    st.subheader("📈 ATM Option Chain")
 
-symbols = option_chain.option_symbols()
+    strike = option_chain.atm_strike()
 
-st.write(f"ATM Strike : {strike}")
+    symbols = option_chain.option_symbols()
 
-st.write(f"CE Symbol : {symbols['CE']}")
+    st.write(f"ATM Strike : {strike}")
+    st.write(f"CE Symbol : {symbols['CE']}")
+    st.write(f"PE Symbol : {symbols['PE']}")
 
-st.write(f"PE Symbol : {symbols['PE']}")
+else:
+    st.warning("Login to Zerodha to view Live Market Data")
 
     else:
 

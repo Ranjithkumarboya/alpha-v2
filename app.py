@@ -69,65 +69,36 @@ with tab1:
 
         col1, col2 = st.columns(2)
 
-        col1.metric("NIFTY 50", nifty)
-        col2.metric("BANK NIFTY", banknifty)
+        col1.metric(
+            "NIFTY 50",
+            nifty
+        )
+
+        col2.metric(
+            "BANK NIFTY",
+            banknifty
+        )
 
         st.divider()
 
         st.subheader("📈 ATM Option Chain")
 
         strike = option_chain.atm_strike()
-symbols = option_chain.option_symbols()
-prices = option_chain.option_prices()
+        symbols = option_chain.option_symbols()
+        prices = option_chain.option_prices()
 
-st.write(f"ATM Strike : {strike}")
+        st.write(f"ATM Strike : {strike}")
 
-col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-col1.metric(
-    "CE Premium",
-    prices["CE"]
-)
+        col1.metric(
+            "CE Premium",
+            prices["CE"]
+        )
 
-col2.metric(
-    "PE Premium",
-    prices["PE"]
-)
+        col2.metric(
+            "PE Premium",
+            prices["PE"]
+        )
 
-st.write(f"CE Symbol : {symbols['CE']}")
-st.write(f"PE Symbol : {symbols['PE']}")
-
-    else:
-        st.warning("Login to Zerodha to view Live Market Data")
-
-
-with tab2:
-
-    st.subheader("Scanner")
-
-    data = scanner.scan()
-
-    st.dataframe(data)
-
-
-with tab3:
-
-    st.subheader("AI Decision")
-
-    st.info(
-        "AI module will evaluate live market data in next update."
-    )
-
-
-with tab4:
-
-    if "access_token" in st.session_state:
-        st.success("✅ Zerodha Connected")
-    else:
-        login = KiteLogin()
-        login.login()
-
-
-st.divider()
-
-st.caption("ALPHA v2")
+        st.write(f"CE Symbol : {

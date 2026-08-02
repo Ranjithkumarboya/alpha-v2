@@ -1,31 +1,24 @@
-"""
-=========================================
-ALPHA v2
-Professional Scanner Engine
-=========================================
-"""
-
 import pandas as pd
 
 from option_chain import option_chain
-from market_data import MarketData
 
 
 class Scanner:
-
-    def __init__(self):
-
-        self.market = MarketData()
 
     def scan(self):
 
         option = option_chain.summary()
 
-        spot = option["spot"]
-        strike = option["strike"]
+        if option is None:
 
-        ce = option["ce_price"]
-        pe = option["pe_price"]
+            return pd.DataFrame([
+                {
+                    "Status": "Market data unavailable"
+                }
+            ])
+
+        ce = option.get("ce_price")
+        pe = option.get("pe_price")
 
         signal = "WAIT"
 
@@ -37,19 +30,14 @@ class Scanner:
             elif pe > ce:
                 signal = "BUY PE"
 
-        data = [
-
+        return pd.DataFrame([
             {
-                "Spot": spot,
-                "ATM": strike,
+                "ATM": option["strike"],
                 "CE Premium": ce,
                 "PE Premium": pe,
                 "Signal": signal
             }
-
-        ]
-
-        return pd.DataFrame(data)
+        ])
 
 
 scanner = Scanner()

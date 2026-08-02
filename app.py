@@ -77,11 +77,25 @@ with tab1:
         st.subheader("📈 ATM Option Chain")
 
         strike = option_chain.atm_strike()
-        symbols = option_chain.option_symbols()
+symbols = option_chain.option_symbols()
+prices = option_chain.option_prices()
 
-        st.write(f"ATM Strike : {strike}")
-        st.write(f"CE Symbol : {symbols['CE']}")
-        st.write(f"PE Symbol : {symbols['PE']}")
+st.write(f"ATM Strike : {strike}")
+
+col1, col2 = st.columns(2)
+
+col1.metric(
+    "CE Premium",
+    prices["CE"]
+)
+
+col2.metric(
+    "PE Premium",
+    prices["PE"]
+)
+
+st.write(f"CE Symbol : {symbols['CE']}")
+st.write(f"PE Symbol : {symbols['PE']}")
 
     else:
         st.warning("Login to Zerodha to view Live Market Data")

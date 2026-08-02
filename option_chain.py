@@ -1,24 +1,40 @@
+"""
+=========================================
+ALPHA v2
+Professional Option Chain Engine
+=========================================
+"""
+
 from datetime import datetime
+
 from market_data import MarketData
 
 
 class OptionChain:
 
     def __init__(self):
+
         self.market = MarketData()
 
-    def atm_strike(self):
-        nifty = self.market.ltp("NSE:NIFTY 50")
+    def spot_price(self):
 
-        if nifty is None:
+        return self.market.ltp("NSE:NIFTY 50")
+
+    def atm_strike(self):
+
+        spot = self.spot_price()
+
+        if spot is None:
             return None
 
-        return round(nifty / 50) * 50
+        return round(spot / 50) * 50
 
-    def current_expiry(self):
+    def expiry_code(self):
+
         today = datetime.today()
 
         year = str(today.year)[2:]
+
         month = today.strftime("%b").upper()
 
         return f"{year}{month}"
@@ -27,10 +43,7 @@ class OptionChain:
 
         strike = self.atm_strike()
 
-        if strike is None:
-            return None
-
-        expiry = self.current_expiry()
+        expiry = self.expiry_code()
 
         ce = f"NFO:NIFTY{expiry}{strike}CE"
         pe = f"NFO:NIFTY{expiry}{strike}PE"
@@ -44,12 +57,6 @@ class OptionChain:
 
         symbols = self.option_symbols()
 
-        if symbols is None:
-            return {
-                "CE": None,
-                "PE": None
-            }
-
         ce = self.market.ltp(symbols["CE"])
         pe = self.market.ltp(symbols["PE"])
 
@@ -57,3 +64,30 @@ class OptionChain:
             "CE": ce,
             "PE": pe
         }
+
+    def summary(self):
+
+        strike = self.atm_strike()
+
+        symbols = self.option_symbols()
+
+        prices = self.option_prices()
+
+        return {
+
+            "spot": self.spot_price(),
+
+            "strike": strike,
+
+            "ce_symbol": symbols["CE"],
+
+            "pe_symbol": symbols["PE"],
+
+            "ce_price": prices["CE"],
+
+            "pe_price": prices["PE"]
+
+        }
+
+
+option_chain = OptionChain()

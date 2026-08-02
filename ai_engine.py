@@ -10,19 +10,29 @@ from scanner import scanner
 
 class AIEngine:
 
-    def __init__(self):
-        pass
-
     def decision(self):
 
         df = scanner.scan()
 
-        row = df.iloc[0]
+        if df.empty:
+            return {
+                "action": "WAIT",
+                "confidence": 0,
+                "trend": "UNKNOWN",
+                "risk": "HIGH"
+            }
 
-        signal = row["Signal"]
+        if "Signal" not in df.columns:
+            return {
+                "action": "WAIT",
+                "confidence": 0,
+                "trend": "UNKNOWN",
+                "risk": "HIGH"
+            }
+
+        signal = df.iloc[0]["Signal"]
 
         if signal == "BUY CE":
-
             return {
                 "action": "BUY CALL",
                 "confidence": 75,
@@ -30,8 +40,7 @@ class AIEngine:
                 "risk": "Medium"
             }
 
-        elif signal == "BUY PE":
-
+        if signal == "BUY PE":
             return {
                 "action": "BUY PUT",
                 "confidence": 75,
@@ -48,18 +57,13 @@ class AIEngine:
 
     def summary(self):
 
-        ai = self.decision()
+        data = self.decision()
 
         return {
-
-            "Action": ai["action"],
-
-            "Confidence": ai["confidence"],
-
-            "Trend": ai["trend"],
-
-            "Risk": ai["risk"]
-
+            "Action": data["action"],
+            "Confidence": data["confidence"],
+            "Trend": data["trend"],
+            "Risk": data["risk"]
         }
 
 

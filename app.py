@@ -2,6 +2,7 @@
 ALPHA v2
 Integrated Dashboard
 """
+
 from kite_login import KiteLogin
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
@@ -18,10 +19,12 @@ st.set_page_config(
     page_icon="📈",
     layout="wide"
 )
+
 st_autorefresh(
     interval=5000,
     key="market_refresh"
 )
+
 dashboard = Dashboard()
 ai = AIEngine()
 market_data = MarketData()
@@ -34,8 +37,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "Scanner",
     "AI",
     "Login"
-]
-)
+])
 
 with tab1:
 
@@ -60,29 +62,29 @@ with tab1:
 
     if "access_token" in st.session_state:
 
-    st.subheader("📈 Live Market")
+        st.subheader("📈 Live Market")
 
-    nifty = market_data.ltp("NSE:NIFTY 50")
-    banknifty = market_data.ltp("NSE:NIFTY BANK")
+        nifty = market_data.ltp("NSE:NIFTY 50")
+        banknifty = market_data.ltp("NSE:NIFTY BANK")
 
-    col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-    col1.metric("NIFTY 50", nifty)
-    col2.metric("BANK NIFTY", banknifty)
+        col1.metric("NIFTY 50", nifty)
+        col2.metric("BANK NIFTY", banknifty)
 
-    st.divider()
+        st.divider()
 
-    st.subheader("📈 ATM Option Chain")
+        st.subheader("📈 ATM Option Chain")
 
-    strike = option_chain.atm_strike()
-    symbols = option_chain.option_symbols()
+        strike = option_chain.atm_strike()
+        symbols = option_chain.option_symbols()
 
-    st.write(f"ATM Strike : {strike}")
-    st.write(f"CE Symbol : {symbols['CE']}")
-    st.write(f"PE Symbol : {symbols['PE']}")
+        st.write(f"ATM Strike : {strike}")
+        st.write(f"CE Symbol : {symbols['CE']}")
+        st.write(f"PE Symbol : {symbols['PE']}")
 
-else:
-    st.warning("Login to Zerodha to view Live Market Data")
+    else:
+        st.warning("Login to Zerodha to view Live Market Data")
 
 
 with tab2:
@@ -93,6 +95,7 @@ with tab2:
 
     st.dataframe(data)
 
+
 with tab3:
 
     st.subheader("AI Decision")
@@ -100,13 +103,16 @@ with tab3:
     st.info(
         "AI module will evaluate live market data in next update."
     )
-        
+
+
 with tab4:
+
     if "access_token" in st.session_state:
         st.success("✅ Zerodha Connected")
     else:
         login = KiteLogin()
         login.login()
+
 
 st.divider()
 

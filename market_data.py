@@ -1,3 +1,10 @@
+"""
+=========================================
+ALPHA v2
+Professional Market Data Engine
+=========================================
+"""
+
 from kiteconnect import KiteConnect
 import streamlit as st
 import pandas as pd
@@ -20,6 +27,7 @@ class MarketData:
     def quote(self, symbol):
 
         try:
+
             return self.kite.quote([symbol])[symbol]
 
         except Exception:
@@ -29,6 +37,7 @@ class MarketData:
     def ltp(self, symbol):
 
         try:
+
             return self.kite.ltp([symbol])[symbol]["last_price"]
 
         except Exception:
@@ -38,6 +47,7 @@ class MarketData:
     def ohlc(self, symbol):
 
         try:
+
             return self.kite.quote([symbol])[symbol]["ohlc"]
 
         except Exception:
@@ -48,9 +58,11 @@ class MarketData:
 
         try:
 
-            data = self.kite.instruments("NFO")
+            df = pd.DataFrame(
+                self.kite.instruments("NFO")
+            )
 
-            return pd.DataFrame(data)
+            return df
 
         except Exception:
 
@@ -61,25 +73,59 @@ class MarketData:
         df = self.instruments()
 
         if df.empty:
-            return df
 
-        df = df[
-            (df["name"] == "NIFTY") &
-            (df["instrument_type"].isin(["CE", "PE"]))
+            return pd.DataFrame()
+
+        required = [
+            "segment",
+            "name",
+            "instrument_type",
+            "expiry",
+            "strike",
+            "tradingsymbol"
         ]
 
-        return df.sort_values(
+        for col in required:
+
+            if col not in df.columns:
+
+                return pd.DataFrame()
+
+        df = df[
+            (df["segment"] == "NFO-OPT") &
+            (df["name"] == "NIFTY") &
+            (df["instrument_type"].isin(["CE", "PE"]))
+        ].copy()
+
+        if df.empty:
+
+            return pd.DataFrame()
+
+        df["expiry"] = pd.to_datetime(
+            df["expiry"]
+        )
+
+        df["strike"] = df["strike"].astype(float)
+
+        df = df.sort_values(
             ["expiry", "strike"]
-        ).reset_index(drop=True)
+        )
+
+        return df.reset_index(drop=True)
 
     def market_status(self):
 
         try:
 
-            self.kite.quote(["NSE:NIFTY 50"])
+            self.kite.quote(
+                ["NSE:NIFTY 50"]
+            )
 
             return "OPEN"
 
         except Exception:
 
             return "CLOSED"
+
+
+market_data = MarketData()

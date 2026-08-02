@@ -32,7 +32,7 @@ class OptionChain:
         df = self.market.nifty_option_chain()
 
         if df.empty:
-            return df
+            return None
 
         expiry = sorted(df["expiry"].unique())[0]
 
@@ -44,7 +44,7 @@ class OptionChain:
 
         df = self.option_chain()
 
-        if df.empty:
+        if df is None:
             return None
 
         strike = self.atm_strike()
@@ -54,13 +54,17 @@ class OptionChain:
         if atm.empty:
             return None
 
-        ce = atm[atm["instrument_type"] == "CE"].iloc[0]
-        pe = atm[atm["instrument_type"] == "PE"].iloc[0]
+        ce = atm[df["instrument_type"] == "CE"].iloc[0]
+        pe = atm[df["instrument_type"] == "PE"].iloc[0]
 
         return {
+
             "strike": strike,
+
             "ce_symbol": ce["tradingsymbol"],
+
             "pe_symbol": pe["tradingsymbol"]
+
         }
 
     def option_prices(self):
@@ -70,15 +74,17 @@ class OptionChain:
         if option is None:
             return None
 
-        ce = self.market.ltp(
+        ce_price = self.market.ltp(
             "NFO:" + option["ce_symbol"]
         )
 
-        pe = self.market.ltp(
+        pe_price = self.market.ltp(
             "NFO:" + option["pe_symbol"]
         )
 
         return {
+
+            "spot": self.spot(),
 
             "strike": option["strike"],
 
@@ -86,9 +92,9 @@ class OptionChain:
 
             "pe_symbol": option["pe_symbol"],
 
-            "ce_price": ce,
+            "ce_price": ce_price,
 
-            "pe_price": pe
+            "pe_price": pe_price
 
         }
 

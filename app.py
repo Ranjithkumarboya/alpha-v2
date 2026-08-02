@@ -6,6 +6,7 @@ from kite_login import KiteLogin
 import streamlit as st
 
 from market import market
+from market_data import MarketData
 from scanner import scanner
 from ai_engine import AIEngine
 from dashboard import Dashboard
@@ -18,6 +19,7 @@ st.set_page_config(
 
 dashboard = Dashboard()
 ai = AIEngine()
+market_data = MarketData()
 
 dashboard.header()
 
@@ -46,6 +48,25 @@ with tab1:
     st.metric(
         "Expiry",
         str(summary["expiry"])
+    )
+
+    st.divider()
+
+    if "access_token" in st.session_state:
+
+        st.subheader("📈 Live Market")
+
+        nifty = market_data.ltp("NSE:NIFTY 50")
+        banknifty = market_data.ltp("NSE:NIFTY BANK")
+
+        col1, col2 = st.columns(2)
+
+        col1.metric("NIFTY 50", nifty)
+        col2.metric("BANK NIFTY", banknifty)
+
+    else:
+
+        st.warning("Login to Zerodha to view Live Market Data")
     )
 
 with tab2:

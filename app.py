@@ -67,7 +67,6 @@ with tab1:
     else:
 
         st.warning("Login to Zerodha to view Live Market Data")
-    )
 
 with tab2:
 

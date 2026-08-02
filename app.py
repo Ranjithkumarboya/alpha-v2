@@ -17,7 +17,10 @@ st.set_page_config(
     page_icon="📈",
     layout="wide"
 )
-
+st_autorefresh(
+    interval=5000,
+    key="market_refresh"
+)
 dashboard = Dashboard()
 ai = AIEngine()
 market_data = MarketData()

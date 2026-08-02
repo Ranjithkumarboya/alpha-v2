@@ -71,6 +71,10 @@ class MarketData:
     def nifty_option_chain(self):
 
         df = self.instruments()
+        st.write("========== DEBUG ==========")
+        st.write("Total Instruments:", len(df))
+        st.write("Columns:", list(df.columns))
+        st.dataframe(df.head(20))
 
         if df.empty:
 

@@ -5,8 +5,6 @@ Professional Option Chain Engine
 =========================================
 """
 
-from datetime import datetime
-
 from market_data import MarketData
 
 
@@ -16,78 +14,87 @@ class OptionChain:
 
         self.market = MarketData()
 
-    def spot_price(self):
+    def spot(self):
 
         return self.market.ltp("NSE:NIFTY 50")
 
     def atm_strike(self):
 
-        spot = self.spot_price()
+        spot = self.spot()
 
         if spot is None:
             return None
 
         return round(spot / 50) * 50
 
-    def expiry_code(self):
+    def option_chain(self):
 
-        today = datetime.today()
+        df = self.market.nifty_option_chain()
 
-        year = str(today.year)[2:]
+        if df.empty:
+            return df
 
-        month = today.strftime("%b").upper()
+        expiry = sorted(df["expiry"].unique())[0]
 
-        return f"{year}{month}"
+        df = df[df["expiry"] == expiry]
 
-    def option_symbols(self):
+        return df.reset_index(drop=True)
+
+    def atm_options(self):
+
+        df = self.option_chain()
+
+        if df.empty:
+            return None
 
         strike = self.atm_strike()
 
-        expiry = self.expiry_code()
+        atm = df[df["strike"] == strike]
 
-        ce = f"NFO:NIFTY{expiry}{strike}CE"
-        pe = f"NFO:NIFTY{expiry}{strike}PE"
+        if atm.empty:
+            return None
+
+        ce = atm[atm["instrument_type"] == "CE"].iloc[0]
+        pe = atm[atm["instrument_type"] == "PE"].iloc[0]
 
         return {
-            "CE": ce,
-            "PE": pe
+            "strike": strike,
+            "ce_symbol": ce["tradingsymbol"],
+            "pe_symbol": pe["tradingsymbol"]
         }
 
     def option_prices(self):
 
-        symbols = self.option_symbols()
+        option = self.atm_options()
 
-        ce = self.market.ltp(symbols["CE"])
-        pe = self.market.ltp(symbols["PE"])
+        if option is None:
+            return None
+
+        ce = self.market.ltp(
+            "NFO:" + option["ce_symbol"]
+        )
+
+        pe = self.market.ltp(
+            "NFO:" + option["pe_symbol"]
+        )
 
         return {
-            "CE": ce,
-            "PE": pe
+
+            "strike": option["strike"],
+
+            "ce_symbol": option["ce_symbol"],
+
+            "pe_symbol": option["pe_symbol"],
+
+            "ce_price": ce,
+
+            "pe_price": pe
+
         }
 
     def summary(self):
 
-        strike = self.atm_strike()
-
-        symbols = self.option_symbols()
-
-        prices = self.option_prices()
-
-        return {
-
-            "spot": self.spot_price(),
-
-            "strike": strike,
-
-            "ce_symbol": symbols["CE"],
-
-            "pe_symbol": symbols["PE"],
-
-            "ce_price": prices["CE"],
-
-            "pe_price": prices["PE"]
-
-        }
+        return self.option_prices()
 
 
 option_chain = OptionChain()

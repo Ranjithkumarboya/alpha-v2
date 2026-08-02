@@ -8,6 +8,7 @@ from streamlit_autorefresh import st_autorefresh
 
 from market import market
 from market_data import MarketData
+from option_chain import OptionChain
 from scanner import scanner
 from ai_engine import AIEngine
 from dashboard import Dashboard
@@ -24,6 +25,7 @@ st_autorefresh(
 dashboard = Dashboard()
 ai = AIEngine()
 market_data = MarketData()
+option_chain = OptionChain()
 
 dashboard.header()
 
@@ -67,6 +69,19 @@ with tab1:
 
         col1.metric("NIFTY 50", nifty)
         col2.metric("BANK NIFTY", banknifty)
+        st.divider()
+
+st.subheader("📈 ATM Option Chain")
+
+strike = option_chain.atm_strike()
+
+symbols = option_chain.option_symbols()
+
+st.write(f"ATM Strike : {strike}")
+
+st.write(f"CE Symbol : {symbols['CE']}")
+
+st.write(f"PE Symbol : {symbols['PE']}")
 
     else:
 

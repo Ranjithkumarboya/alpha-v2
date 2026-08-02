@@ -117,6 +117,9 @@ class MarketData:
         df = df.sort_values(
             ["expiry", "strike"]
         )
+        st.write(df["instrument_type"].value_counts())
+
+        st.write(df.head(20))
 
         return df.reset_index(drop=True)
 

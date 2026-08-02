@@ -1,51 +1,55 @@
 """
-==================================================
+=========================================
 ALPHA v2
-Scanner Engine
-==================================================
+Professional Scanner Engine
+=========================================
 """
 
-from logger import info
+import pandas as pd
+
+from option_chain import option_chain
+from market_data import MarketData
 
 
-class ScannerEngine:
+class Scanner:
 
     def __init__(self):
 
-        info("Scanner Engine Loaded")
-
-        self.watchlist = [
-            "RELIANCE",
-            "TCS",
-            "HDFCBANK",
-            "ICICIBANK",
-            "SBIN",
-            "INFY",
-            "LT",
-            "AXISBANK",
-            "BAJFINANCE",
-            "KOTAKBANK"
-        ]
+        self.market = MarketData()
 
     def scan(self):
 
-        results = []
+        option = option_chain.summary()
 
-        for stock in self.watchlist:
+        spot = option["spot"]
+        strike = option["strike"]
 
-            results.append({
+        ce = option["ce_price"]
+        pe = option["pe_price"]
 
-                "symbol": stock,
+        signal = "WAIT"
 
-                "score": 0,
+        if ce is not None and pe is not None:
 
-                "trend": "Unknown",
+            if ce > pe:
+                signal = "BUY CE"
 
-                "decision": "WAIT"
+            elif pe > ce:
+                signal = "BUY PE"
 
-            })
+        data = [
 
-        return results
+            {
+                "Spot": spot,
+                "ATM": strike,
+                "CE Premium": ce,
+                "PE Premium": pe,
+                "Signal": signal
+            }
+
+        ]
+
+        return pd.DataFrame(data)
 
 
-scanner = ScannerEngine()
+scanner = Scanner()

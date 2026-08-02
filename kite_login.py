@@ -38,6 +38,8 @@ class KiteLogin:
                 st.write("Access Token:", access_token)
 
                 st.session_state["access_token"] = access_token
+                st.success("Stored in session")
+                st.write(st.session_state)
 
                 st.success("✅ Login Successful")
 

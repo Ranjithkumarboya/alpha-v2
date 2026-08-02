@@ -6,9 +6,11 @@ class MarketData:
 
     def __init__(self):
         self.kite = KiteConnect(api_key=st.secrets["API_KEY"])
-
-        if "ACCESS_TOKEN" in st.session_state:
-            self.kite.set_access_token(st.session_state["ACCESS_TOKEN"])
+   if "access_token" in st.session_state:
+    self.kite.set_access_token(
+        st.session_state["access_token"]
+    )
+        
 
     def quote(self, symbol):
         try:

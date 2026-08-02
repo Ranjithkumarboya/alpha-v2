@@ -1,22 +1,24 @@
 """
+=========================================
 ALPHA v2
-Integrated Dashboard
+Professional AI Trading Platform
+=========================================
 """
 
-from kite_login import KiteLogin
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 
+from kite_login import KiteLogin
+from dashboard import dashboard
 from market import market
-from market_data import MarketData
-from option_chain import OptionChain
+from market_data import market_data
+from option_chain import option_chain
 from scanner import scanner
-from ai_engine import AIEngine
-from dashboard import Dashboard
+from ai_engine import ai
 
 st.set_page_config(
     page_title="ALPHA v2",
-    page_icon="📈",
+    page_icon="🚀",
     layout="wide"
 )
 
@@ -24,11 +26,6 @@ st_autorefresh(
     interval=5000,
     key="market_refresh"
 )
-
-dashboard = Dashboard()
-ai = AIEngine()
-market_data = MarketData()
-option_chain = OptionChain()
 
 dashboard.header()
 
@@ -39,101 +36,166 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "Login"
 ])
 
+# =====================================================
+# DASHBOARD
+# =====================================================
+
 with tab1:
 
     summary = market.summary()
 
-    st.metric(
+    c1, c2, c3 = st.columns(3)
+
+    c1.metric(
         "Market",
         summary["status"]
     )
 
-    st.metric(
+    c2.metric(
         "Market Regime",
         summary["regime"]
     )
 
-    st.metric(
+    c3.metric(
         "Expiry",
-        str(summary["expiry"])
+        summary["expiry"]
     )
 
     st.divider()
 
-    if "access_token" in st.session_state:
+    if "access_token" not in st.session_state:
+
+        st.warning(
+            "Please login to Zerodha to view live market data."
+        )
+
+    else:
 
         st.subheader("📈 Live Market")
-
-        nifty = market_data.ltp("NSE:NIFTY 50")
-        banknifty = market_data.ltp("NSE:NIFTY BANK")
 
         col1, col2 = st.columns(2)
 
         col1.metric(
             "NIFTY 50",
-            nifty
+            market_data.ltp("NSE:NIFTY 50")
         )
 
         col2.metric(
             "BANK NIFTY",
-            banknifty
+            market_data.ltp("NSE:NIFTY BANK")
         )
 
         st.divider()
 
         st.subheader("📈 ATM Option Chain")
 
-        strike = option_chain.atm_strike()
-        symbols = option_chain.option_symbols()
-        prices = option_chain.option_prices()
+        option = option_chain.summary()
 
-        st.write(f"ATM Strike : {strike}")
+        if option is None:
 
-        col3, col4 = st.columns(2)
+            st.error(
+                "Unable to load Option Chain."
+            )
 
-        col3.metric(
-            "CE Premium",
-            prices["CE"]
-        )
+        else:
 
-        col4.metric(
-            "PE Premium",
-            prices["PE"]
-        )
+            st.write(
+                f"ATM Strike : {option['strike']}"
+            )
 
-        st.write(f"CE Symbol : {symbols['CE']}")
-        st.write(f"PE Symbol : {symbols['PE']}")
+            c3, c4 = st.columns(2)
 
-    else:
+            c3.metric(
+                "CE Premium",
+                option["ce_price"]
+            )
 
-        st.warning(
-            "Login to Zerodha to view Live Market Data"
-        )
+            c4.metric(
+                "PE Premium",
+                option["pe_price"]
+            )
+
+            st.write(
+                f"CE Symbol : {option['ce_symbol']}"
+            )
+
+            st.write(
+                f"PE Symbol : {option['pe_symbol']}"
+            )
+
+    st.divider()
+
+# =====================================================
+# SCANNER
+# =====================================================
 
 with tab2:
 
-    st.subheader("Scanner")
+    st.subheader("📊 Scanner")
 
-    data = scanner.scan()
+    scan = scanner.scan()
 
-    st.dataframe(data)
+    st.dataframe(
+        scan,
+        use_container_width=True
+    )
+
+# =====================================================
+# AI
+# =====================================================
 
 with tab3:
 
-    st.subheader("AI Decision")
+    st.subheader("🤖 AI Decision Engine")
 
-    st.info(
-        "AI module will evaluate live market data in next update."
+    data = ai.summary()
+
+    c1, c2 = st.columns(2)
+
+    c1.metric(
+        "Action",
+        data["Action"]
     )
+
+    c2.metric(
+        "Confidence",
+        f"{data['Confidence']}%"
+    )
+
+    c3, c4 = st.columns(2)
+
+    c3.metric(
+        "Trend",
+        data["Trend"]
+    )
+
+    c4.metric(
+        "Risk",
+        data["Risk"]
+    )
+
+# =====================================================
+# LOGIN
+# =====================================================
 
 with tab4:
 
     if "access_token" in st.session_state:
+
         st.success("✅ Zerodha Connected")
+
     else:
+
         login = KiteLogin()
+
         login.login()
+
+# =====================================================
+# FOOTER
+# =====================================================
 
 st.divider()
 
-st.caption("ALPHA v2")
+st.caption(
+    "🚀 ALPHA v2 | Professional AI Trading Platform"
+)

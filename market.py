@@ -1,11 +1,11 @@
 """
 ====================================================
 ALPHA v2
-Market Engine
+Professional Market Engine
 ====================================================
 """
 
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from logger import info
 
@@ -30,16 +30,28 @@ class MarketEngine:
     def market_regime(self):
         """
         Placeholder.
-        Will be upgraded with live NIFTY and INDIA VIX.
+        AI Engine will replace this with
+        Bullish / Bearish / Sideways.
         """
         return "UNKNOWN"
 
+    def current_expiry(self):
+
+        today = datetime.today()
+
+        days = (3 - today.weekday()) % 7
+
+        expiry = today + timedelta(days=days)
+
+        return expiry.strftime("%d %b %Y")
+
     def is_expiry_day(self):
 
-        today = datetime.now()
+        return datetime.today().weekday() == 3
 
-        # Thursday = 3
-        return today.weekday() == 3
+    def market_open(self):
+
+        return self.market_status() == "MARKET OPEN"
 
     def summary(self):
 
@@ -49,7 +61,11 @@ class MarketEngine:
 
             "regime": self.market_regime(),
 
-            "expiry": self.is_expiry_day()
+            "expiry": self.current_expiry(),
+
+            "is_expiry": self.is_expiry_day(),
+
+            "market_open": self.market_open()
 
         }
 

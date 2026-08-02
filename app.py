@@ -89,16 +89,51 @@ with tab1:
 
         st.write(f"ATM Strike : {strike}")
 
-        col1, col2 = st.columns(2)
+        col3, col4 = st.columns(2)
 
-        col1.metric(
+        col3.metric(
             "CE Premium",
             prices["CE"]
         )
 
-        col2.metric(
+        col4.metric(
             "PE Premium",
             prices["PE"]
         )
 
-        st.write(f"CE Symbol : {
+        st.write(f"CE Symbol : {symbols['CE']}")
+        st.write(f"PE Symbol : {symbols['PE']}")
+
+    else:
+
+        st.warning(
+            "Login to Zerodha to view Live Market Data"
+        )
+
+with tab2:
+
+    st.subheader("Scanner")
+
+    data = scanner.scan()
+
+    st.dataframe(data)
+
+with tab3:
+
+    st.subheader("AI Decision")
+
+    st.info(
+        "AI module will evaluate live market data in next update."
+    )
+
+with tab4:
+
+    if "access_token" in st.session_state:
+        st.success("✅ Zerodha Connected")
+    else:
+        login = KiteLogin()
+        login.login()
+
+st.divider()
+
+st.caption("ALPHA v2")

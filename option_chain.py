@@ -54,8 +54,8 @@ class OptionChain:
         if atm.empty:
             return None
 
-        ce = atm[df["instrument_type"] == "CE"].iloc[0]
-        pe = atm[df["instrument_type"] == "PE"].iloc[0]
+        ce = atm[atm["instrument_type"] == "CE"].iloc[0]
+        pe = atm[atm["instrument_type"] == "PE"].iloc[0]
 
         return {
 

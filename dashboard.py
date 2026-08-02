@@ -1,55 +1,118 @@
 """
+=========================================
 ALPHA v2
-Dashboard Module
+Professional Dashboard
+=========================================
 """
 
 import streamlit as st
 
+from ai_engine import ai
+from option_chain import option_chain
+from market import market
+
 
 class Dashboard:
 
+    def __init__(self):
+        pass
+
     def header(self):
 
-        st.title("📈 ALPHA v2")
+        st.title("🚀 ALPHA v2")
 
-        st.caption("Professional AI Trading Platform")
+        st.caption(
+            "AI Powered Options Trading Platform"
+        )
 
-    def market_status(self, status):
+    def market_summary(self):
 
-        if status:
+        summary = market.summary()
 
-            st.success("🟢 Market Open")
+        c1, c2, c3 = st.columns(3)
 
-        else:
+        c1.metric(
+            "Market",
+            summary["status"]
+        )
 
-            st.error("🔴 Market Closed")
+        c2.metric(
+            "Trend",
+            summary["regime"]
+        )
 
-    def show_trade(self, result):
+        c3.metric(
+            "Expiry",
+            summary["expiry"]
+        )
 
-        st.subheader(result["symbol"])
+    def option_summary(self):
+
+        data = option_chain.summary()
+
+        st.subheader("📈 ATM Option Chain")
+
+        c1, c2, c3 = st.columns(3)
+
+        c1.metric(
+            "Spot",
+            data["spot"]
+        )
+
+        c2.metric(
+            "ATM",
+            data["strike"]
+        )
+
+        c3.metric(
+            "CE Premium",
+            data["ce_price"]
+        )
+
+        c4, c5 = st.columns(2)
+
+        c4.metric(
+            "PE Premium",
+            data["pe_price"]
+        )
+
+        st.write(
+            "CE :", data["ce_symbol"]
+        )
+
+        st.write(
+            "PE :", data["pe_symbol"]
+        )
+
+    def ai_summary(self):
+
+        data = ai.summary()
+
+        st.subheader("🤖 AI Decision")
 
         c1, c2 = st.columns(2)
 
-        with c1:
+        c1.metric(
+            "Action",
+            data["Action"]
+        )
 
-            st.metric("Decision", result["action"])
+        c2.metric(
+            "Confidence",
+            f"{data['Confidence']}%"
+        )
 
-            st.metric("Confidence", f'{result["confidence"]}%')
+        c3, c4 = st.columns(2)
 
-            st.metric("Score", result["score"])
+        c3.metric(
+            "Trend",
+            data["Trend"]
+        )
 
-        with c2:
+        c4.metric(
+            "Risk",
+            data["Risk"]
+        )
 
-            st.metric("Entry", result["entry"])
 
-            st.metric("Stoploss", result["stoploss"])
-
-            st.metric("Target 1", result["target1"])
-
-            st.metric("Target 2", result["target2"])
-
-        st.write("### Evidence")
-
-        for reason in result["reasons"]:
-
-            st.success(reason)
+dashboard = Dashboard()

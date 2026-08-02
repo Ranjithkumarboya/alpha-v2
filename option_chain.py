@@ -1,42 +1,33 @@
-from kiteconnect import KiteConnect
-import streamlit as st
+from market_data import MarketData
 
 
 class OptionChain:
 
     def __init__(self):
-        self.kite = KiteConnect(api_key=st.secrets["API_KEY"])
-
-        if "access_token" in st.session_state:
-            self.kite.set_access_token(
-                st.session_state["access_token"]
-            )
-
-    def ltp(self):
-        try:
-            return self.kite.ltp(["NSE:NIFTY 50"])["NSE:NIFTY 50"]["last_price"]
-        except Exception:
-            return None
+        self.market = MarketData()
 
     def atm_strike(self):
-
-        ltp = self.ltp()
-
-        if ltp is None:
-            return None
-
-        return round(ltp / 50) * 50
-
-    def current_expiry(self):
-        return "AUTO"
+        nifty = self.market.ltp("NSE:NIFTY 50")
+        return round(nifty / 50) * 50
 
     def option_symbols(self):
-
         strike = self.atm_strike()
 
-        expiry = self.current_expiry()
+        ce = f"NFO:NIFTYAUTO{strike}CE"
+        pe = f"NFO:NIFTYAUTO{strike}PE"
 
         return {
-            "CE": f"NFO:NIFTY{expiry}{strike}CE",
-            "PE": f"NFO:NIFTY{expiry}{strike}PE"
+            "CE": ce,
+            "PE": pe
+        }
+
+    def option_prices(self):
+        symbols = self.option_symbols()
+
+        ce_price = self.market.ltp(symbols["CE"])
+        pe_price = self.market.ltp(symbols["PE"])
+
+        return {
+            "CE": ce_price,
+            "PE": pe_price
         }

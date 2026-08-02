@@ -1,38 +1,42 @@
 """
-====================================================
+=========================================
 ALPHA v2
 Professional Market Engine
-====================================================
+=========================================
 """
 
 from datetime import datetime, time, timedelta
-
-from logger import info
 
 
 class MarketEngine:
 
     def __init__(self):
-        info("Market Engine Loaded")
+        pass
 
     def market_status(self):
 
-        now = datetime.now().time()
+        now = datetime.now()
 
-        if now < time(9, 15):
+        # Saturday / Sunday
+        if now.weekday() >= 5:
+            return "MARKET CLOSED"
+
+        current = now.time()
+
+        if current < time(9, 0):
+            return "MARKET CLOSED"
+
+        elif current < time(9, 15):
             return "PRE MARKET"
 
-        elif now <= time(15, 30):
+        elif current <= time(15, 30):
             return "MARKET OPEN"
 
         return "MARKET CLOSED"
 
     def market_regime(self):
-        """
-        Placeholder.
-        AI Engine will replace this with
-        Bullish / Bearish / Sideways.
-        """
+
+        # AI Engine will replace this later
         return "UNKNOWN"
 
     def current_expiry(self):
@@ -47,7 +51,12 @@ class MarketEngine:
 
     def is_expiry_day(self):
 
-        return datetime.today().weekday() == 3
+        today = datetime.today()
+
+        if today.weekday() != 3:
+            return False
+
+        return True
 
     def market_open(self):
 

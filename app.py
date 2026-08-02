@@ -4,6 +4,7 @@ Integrated Dashboard
 """
 from kite_login import KiteLogin
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 
 from market import market
 from market_data import MarketData

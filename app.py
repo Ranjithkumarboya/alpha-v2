@@ -75,7 +75,6 @@ with tab1:
     st.subheader("📈 ATM Option Chain")
 
     strike = option_chain.atm_strike()
-
     symbols = option_chain.option_symbols()
 
     st.write(f"ATM Strike : {strike}")

@@ -100,6 +100,9 @@ class MarketData:
             (df["name"] == "NIFTY") &
             (df["instrument_type"].isin(["CE", "PE"]))
         ].copy()
+        st.write("Filtered Instruments:", len(df))
+        st.dataframe(df.head(20))
+        st.write("===========================")
 
         if df.empty:
 

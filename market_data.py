@@ -1,59 +1,66 @@
-from kiteconnect import KiteConnect
+"""
+=========================================
+ALPHA v2
+Professional Market Data Engine
+=========================================
+"""
+
 import streamlit as st
 import pandas as pd
+
+from kite_session import KiteSession
 
 
 class MarketData:
 
     def __init__(self):
-        self.kite = KiteConnect(
-            api_key=st.secrets["API_KEY"]
-        )
+        self.refresh_session()
 
-    def connect(self):
-        if "access_token" in st.session_state:
-            self.kite.set_access_token(
-                st.session_state["access_token"]
-            )
+    def refresh_session(self):
+        self.kite = KiteSession.get_kite()
 
     def quote(self, symbol):
 
-        self.connect()
+        self.refresh_session()
 
         try:
             return self.kite.quote([symbol])[symbol]
+
         except Exception as e:
             st.error(e)
             return None
 
     def ltp(self, symbol):
 
-        self.connect()
+        self.refresh_session()
 
         try:
             return self.kite.ltp([symbol])[symbol]["last_price"]
+
         except Exception as e:
             st.error(e)
             return None
 
     def ohlc(self, symbol):
 
-        self.connect()
+        self.refresh_session()
 
         try:
             return self.kite.quote([symbol])[symbol]["ohlc"]
+
         except Exception as e:
             st.error(e)
             return None
 
     def instruments(self):
 
-        self.connect()
+        self.refresh_session()
 
         try:
             return pd.DataFrame(
                 self.kite.instruments("NFO")
             )
+
         except Exception as e:
             st.error(e)
             return pd.DataFrame()
@@ -64,6 +71,20 @@ class MarketData:
 
         if df.empty:
             return pd.DataFrame()
+
+        required = [
+            "segment",
+            "name",
+            "instrument_type",
+            "expiry",
+            "strike",
+            "tradingsymbol"
+        ]
+
+        for col in required:
+
+            if col not in df.columns:
+                return pd.DataFrame()
 
         df = df[
             (df["segment"] == "NFO-OPT") &
@@ -83,12 +104,13 @@ class MarketData:
 
     def market_status(self):
 
-        self.connect()
+        self.refresh_session()
 
         try:
             self.kite.quote(["NSE:NIFTY 50"])
             return "OPEN"
-        except:
+
+        except Exception:
             return "CLOSED"
 
 

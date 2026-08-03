@@ -14,7 +14,13 @@ class OptionChain:
 
         self.market = MarketData()
 
+    def refresh(self):
+
+        self.market = MarketData()
+
     def spot(self):
+
+        self.refresh()
 
         return self.market.ltp("NSE:NIFTY 50")
 
@@ -28,6 +34,8 @@ class OptionChain:
         return round(float(spot) / 50) * 50
 
     def option_chain(self):
+
+        self.refresh()
 
         df = self.market.nifty_option_chain()
 
@@ -57,7 +65,7 @@ class OptionChain:
 
         available = sorted(df["strike"].unique())
 
-        if len(available) == 0:
+        if not available:
             return None
 
         strike = min(

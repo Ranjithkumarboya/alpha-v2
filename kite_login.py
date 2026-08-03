@@ -27,22 +27,24 @@ class KiteLogin:
         st.write("Query Params:", query_params)
 
         if (
-    "request_token" in query_params
-    and "access_token" not in st.session_state
-):
+            "request_token" in query_params
+            and "access_token" not in st.session_state
+        ):
 
-    request_token = query_params["request_token"]
+            request_token = query_params["request_token"]
 
-    try:
-        access_token = self.auth.generate_session(request_token)
+            try:
 
-        st.session_state["access_token"] = access_token
+                access_token = self.auth.generate_session(request_token)
 
-        st.success("✅ Login Successful")
+                st.session_state["access_token"] = access_token
 
-        st.query_params.clear()
+                st.success("✅ Login Successful")
 
-        st.rerun()
+                st.query_params.clear()
 
-    except Exception as e:
-        st.error(f"Login Failed: {e}")
+                st.rerun()
+
+            except Exception as e:
+
+                st.error(f"Login Failed: {e}")

@@ -16,6 +16,7 @@ from market_data import MarketData
 from option_chain import OptionChain
 from scanner import Scanner
 from ai_engine import AIEngine
+from analysis_engine import analysis
 
 st.set_page_config(
     page_title="ALPHA v2",

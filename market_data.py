@@ -102,6 +102,32 @@ class MarketData:
             ["expiry", "strike"]
         ).reset_index(drop=True)
 
+    def historical_data(
+        self,
+        instrument_token,
+        from_date,
+        to_date,
+        interval="5minute"
+    ):
+
+        self.refresh_session()
+
+        try:
+
+            data = self.kite.historical_data(
+                instrument_token=instrument_token,
+                from_date=from_date,
+                to_date=to_date,
+                interval=interval
+            )
+
+            return pd.DataFrame(data)
+
+        except Exception as e:
+
+            st.error(e)
+            return pd.DataFrame()
+
     def market_status(self):
 
         self.refresh_session()

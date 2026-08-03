@@ -11,10 +11,11 @@ from streamlit_autorefresh import st_autorefresh
 from kite_login import KiteLogin
 from dashboard import dashboard
 from market import market
-from market_data import market_data
-from option_chain import option_chain
-from scanner import scanner
-from ai_engine import ai
+
+from market_data import MarketData
+from option_chain import OptionChain
+from scanner import Scanner
+from ai_engine import AIEngine
 
 st.set_page_config(
     page_title="ALPHA v2",
@@ -23,9 +24,14 @@ st.set_page_config(
 )
 
 st_autorefresh(
-    interval=5000,
+    interval=30000,
     key="market_refresh"
 )
+
+market_data = MarketData()
+option_chain = OptionChain()
+scanner = Scanner()
+ai = AIEngine()
 
 dashboard.header()
 
@@ -89,6 +95,7 @@ with tab1:
 
         st.subheader("📈 ATM Option Chain")
 
+        option_chain = OptionChain()
         option = option_chain.summary()
 
         if option is None:
@@ -133,6 +140,7 @@ with tab2:
 
     st.subheader("📊 Scanner")
 
+    scanner = Scanner()
     scan = scanner.scan()
 
     st.dataframe(
@@ -148,6 +156,7 @@ with tab3:
 
     st.subheader("🤖 AI Decision Engine")
 
+    ai = AIEngine()
     data = ai.summary()
 
     c1, c2 = st.columns(2)

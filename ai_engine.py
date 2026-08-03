@@ -5,16 +5,27 @@ Professional AI Engine
 =========================================
 """
 
-from scanner import scanner
+from scanner import Scanner
 
 
 class AIEngine:
 
+    def __init__(self):
+
+        self.scanner = Scanner()
+
+    def refresh(self):
+
+        self.scanner = Scanner()
+
     def decision(self):
 
-        df = scanner.scan()
+        self.refresh()
+
+        df = self.scanner.scan()
 
         if df.empty:
+
             return {
                 "action": "WAIT",
                 "confidence": 0,
@@ -23,6 +34,7 @@ class AIEngine:
             }
 
         if "Signal" not in df.columns:
+
             return {
                 "action": "WAIT",
                 "confidence": 0,
@@ -32,25 +44,29 @@ class AIEngine:
 
         signal = df.iloc[0]["Signal"]
 
+        confidence = df.iloc[0].get("Confidence", 50)
+
         if signal == "BUY CE":
+
             return {
                 "action": "BUY CALL",
-                "confidence": 75,
+                "confidence": confidence,
                 "trend": "Bullish",
                 "risk": "Medium"
             }
 
-        if signal == "BUY PE":
+        elif signal == "BUY PE":
+
             return {
                 "action": "BUY PUT",
-                "confidence": 75,
+                "confidence": confidence,
                 "trend": "Bearish",
                 "risk": "Medium"
             }
 
         return {
             "action": "WAIT",
-            "confidence": 50,
+            "confidence": confidence,
             "trend": "Sideways",
             "risk": "Low"
         }
@@ -60,10 +76,15 @@ class AIEngine:
         data = self.decision()
 
         return {
+
             "Action": data["action"],
+
             "Confidence": data["confidence"],
+
             "Trend": data["trend"],
+
             "Risk": data["risk"]
+
         }
 
 

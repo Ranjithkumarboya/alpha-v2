@@ -34,31 +34,41 @@ class Scanner:
                 }
             ])
 
+        spot = option.get("spot")
+        strike = option.get("strike")
         ce = option.get("ce_price")
         pe = option.get("pe_price")
 
         signal = "WAIT"
-
+        trend = "SIDEWAYS"
         confidence = 50
 
         if ce is not None and pe is not None:
 
+            diff = abs(ce - pe)
+
             if ce > pe:
 
                 signal = "BUY CE"
-                confidence = 75
+                trend = "BULLISH"
 
             elif pe > ce:
 
                 signal = "BUY PE"
-                confidence = 75
+                trend = "BEARISH"
+
+            confidence = min(
+                95,
+                50 + int(diff / 2)
+            )
 
         return pd.DataFrame([
             {
-                "ATM": option["strike"],
-                "Spot": option["spot"],
+                "Spot": spot,
+                "ATM": strike,
                 "CE Premium": ce,
                 "PE Premium": pe,
+                "Trend": trend,
                 "Signal": signal,
                 "Confidence": confidence
             }
